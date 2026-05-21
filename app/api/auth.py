@@ -1,3 +1,4 @@
+from app.middleware.auth import get_current_user
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -111,3 +112,33 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         user_id=str(user.id),
         role=user.role
     )
+@router.post("/logout")
+async def logout(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Logout from current device"""
+    from app.models.user import Session
+    
+    db.query(Session).filter(
+        Session.user_id == current_user.id,
+        Session.is_active == True
+    ).update({"is_active": False})
+    db.commit()
+    
+    return {"message": "Logged out successfully"}
+
+@router.post("/logout/all")
+async def logout_all_devices(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Logout from all devices"""
+    from app.models.user import Session
+    
+    db.query(Session).filter(
+        Session.user_id == current_user.id
+    ).update({"is_active": False})
+    db.commit()
+    
+    return {"message": "Logged out from all devices successfully"}

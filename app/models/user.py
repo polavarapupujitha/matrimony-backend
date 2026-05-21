@@ -12,16 +12,17 @@ class User(Base):
     mobile = Column(String(15), unique=True, nullable=True)
     email = Column(String(255), unique=True, nullable=True)
     password_hash = Column(String(255), nullable=True)
-    role = Column(String(20), default="user")  # ← ADD THIS LINE
+    role = Column(String(20), default="user")
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     last_login = Column(DateTime, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
-    # relationships
+    # Relationships
     profile = relationship("Profile", back_populates="user", uselist=False)
     sessions = relationship("Session", back_populates="user")
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
 
 class Session(Base):
     __tablename__ = "sessions"
