@@ -15,5 +15,4 @@ class Photo(Base):
     is_primary = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
     
-    # Relationship back to Profile
     profile = relationship("Profile", back_populates="photos")
